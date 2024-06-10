@@ -3,10 +3,11 @@ import sys
 import argparse
 import requests
 from bs4 import BeautifulSoup
+from subprocess import Popen, PIPE
+import shutil
 
 # Define the banner
 BANNER = """
-
    _____                 _____       _         
   / ____|               / ____|     | |        
  | |  __ _ __ ___ _   _| (___  _   _| |__  ___ 
@@ -15,7 +16,7 @@ BANNER = """
   \_____|_|  \___|\__, |_____/ \__,_|_.__/|___/
                    __/ |                       
                   |___/                        
-
+  
 """
 
 # Define the arguments
@@ -42,11 +43,7 @@ def enumerate_subdomains(domain, engine):
         return use_web_scraping(domain, engine)
 
 def is_sublist3r_installed():
-    try:
-        Popen(["sublist3r", "--version"], stdout=PIPE, stderr=PIPE).communicate()
-        return True
-    except OSError:
-        return False
+    return shutil.which('sublist3r') is not None
 
 def use_sublist3r(domain, engine):
     # Use sublist3r to enumerate subdomains
@@ -54,7 +51,7 @@ def use_sublist3r(domain, engine):
     process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
     output, error = process.communicate()
     if process.returncode == 0:
-        return output.decode('utf-8').splitlines()
+        return list(set(output.decode('utf-8').splitlines()))
     else:
         return []
 
@@ -63,14 +60,13 @@ def use_web_scraping(domain, engine):
     url = search_engines[engine].format(domain)
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    subdomains = []
+    subdomains = set()
     for link in soup.find_all('a'):
         href = link.get('href')
         if href and href.startswith('http'):
             subdomain = href.split('/')[2]
-            if subdomain not in subdomains:
-                subdomains.append(subdomain)
-    return subdomains
+            subdomains.add(subdomain)
+    return list(subdomains)
 
 # Print the banner
 print(BANNER)
