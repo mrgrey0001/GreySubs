@@ -15,7 +15,7 @@ BANNER = """
   \_____|_|  \___|\__, |_____/ \__,_|_.__/|___/
                    __/ |                       
                   |___/                        
-  
+  """
 # Define the arguments
 parser = argparse.ArgumentParser(description='Auto Subdomain Enumeration Tool')
 parser.add_argument('-d', '--domain', help='Domain to enumerate', required=True)
