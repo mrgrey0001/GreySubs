@@ -5,7 +5,6 @@ import requests
 from bs4 import BeautifulSoup
 from subprocess import Popen, PIPE
 import shutil
-
 # Define the banner
 BANNER = """
    _____                 _____       _         
@@ -17,10 +16,8 @@ BANNER = """
                    __/ |                       
                   |___/                        
   
-"""
-
 # Define the arguments
-parser = argparse.ArgumentParser(description='GreySubs - Auto Subdomain Enumeration Tool')
+parser = argparse.ArgumentParser(description='Auto Subdomain Enumeration Tool')
 parser.add_argument('-d', '--domain', help='Domain to enumerate', required=True)
 parser.add_argument('-e', '--engine', help='Search engine to use (bing, google, etc.)', default='bing')
 
@@ -67,7 +64,6 @@ def use_web_scraping(domain, engine):
             subdomain = href.split('/')[2]
             subdomains.add(subdomain)
     return list(subdomains)
-
 # Print the banner
 print(BANNER)
 
@@ -76,7 +72,7 @@ subdomains = enumerate_subdomains(args.domain, args.engine)
 
 # Print the results
 if subdomains:
-    print(f"Total Unique Subdomains Found: {len(subdomains)}")
+    print(f"Subdomains for {args.domain}:")
     for subdomain in subdomains:
         print(subdomain)
 else:
