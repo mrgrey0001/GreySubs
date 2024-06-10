@@ -5,7 +5,6 @@ import requests
 from bs4 import BeautifulSoup
 from subprocess import Popen, PIPE
 import shutil
-# Define the banner
 BANNER = """
    _____                 _____       _         
   / ____|               / ____|     | |        
@@ -14,12 +13,12 @@ BANNER = """
  | |__| | | |  __/ |_| |____) | |_| | |_) \__ \
   \_____|_|  \___|\__, |_____/ \__,_|_.__/|___/
                    __/ |                       
-                  |___/                        
-  """
+                  |___/  """
 # Define the arguments
 parser = argparse.ArgumentParser(description='Auto Subdomain Enumeration Tool')
 parser.add_argument('-d', '--domain', help='Domain to enumerate', required=True)
 parser.add_argument('-e', '--engine', help='Search engine to use (bing, google, etc.)', default='bing')
+parser.add_argument('-p', '--proxy', help='Proxy server to use (e.g. http://proxy_ip:proxy_port)')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -29,6 +28,13 @@ search_engines = {
     'bing': 'https://www.bing.com/search?q=site:{}',
     'google': 'https://www.google.com/search?q=site:{}'
 }
+
+# Define the proxy server
+proxy = args.proxy
+if proxy:
+    proxies = {'http': proxy, 'https': proxy}
+else:
+    proxies = None
 
 # Define the subdomain enumeration function
 def enumerate_subdomains(domain, engine):
@@ -55,7 +61,7 @@ def use_sublist3r(domain, engine):
 def use_web_scraping(domain, engine):
     # Use web scraping approach to enumerate subdomains
     url = search_engines[engine].format(domain)
-    response = requests.get(url)
+    response = requests.get(url, proxies=proxies)
     soup = BeautifulSoup(response.content, 'html.parser')
     subdomains = set()
     for link in soup.find_all('a'):
